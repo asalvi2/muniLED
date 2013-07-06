@@ -3,6 +3,8 @@ import RPi.GPIO as GPIO
 import time
 
 from xml.dom import minidom
+
+
 #busNum=0 for first bus, 1 for second, 2 for third,..., 4 for fifth
 def getBusTime(busNum):
 	NextBUSUrl = "http://webservices.nextbus.com/service/publicXMLFeed?command=predictions&a=sf-muni&r=N&s=3212&useShortTitles=true"
@@ -30,7 +32,7 @@ def getBusTime(busNum):
 			'sec': node.getAttribute('seconds')
 		})		
 
-	nextTime = "temp"
+	nextTime = ""
 	beginTime = 0
 	endTime = 0
 	timeStrLen = 0
@@ -45,17 +47,16 @@ def getBusTime(busNum):
 		for j in range(endTime-beginTime):
 			fullTime = fullTime+nextTime[beginTime+j]
 
-		print fullTime
+		#print fullTime
 		#print str(nextTime)[5]
-		print str(busTimesMinutes[i+busNum]) + str(busTimesSeconds[i+busNum])
+		#print str(busTimesMinutes[i+busNum]) + str(busTimesSeconds[i+busNum])
 	
 	return fullTime
 
 def busLights(time1, pin1R, pin1G, pin1B, time2, pin2R, pin2G, pin2B):
+	
 	GPIO.setmode(GPIO.BOARD)
-	#GPIO.setup(pin1R, GPIO.OUT)
-	#GPIO.setup(pin1G, GPIO.OUT)
-	#GPIO.setup(pin1B, GPIO.OUT)
+	
 	print "next buses arrive in " + str(time1) + " and " + str(time2) +  " minutes"
 	if int(time1) <= 6:
 		if int(time1) >= 4:
@@ -82,6 +83,8 @@ def busLights(time1, pin1R, pin1G, pin1B, time2, pin2R, pin2G, pin2B):
 	time.sleep(12)	
 	return
 
+
+##Example code to run check 3 times.
 for k in range(3):
 	firstTime = getBusTime(0)
 	secondTime = getBusTime(1)
