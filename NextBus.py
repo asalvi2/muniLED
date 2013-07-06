@@ -6,7 +6,7 @@ from xml.dom import minidom
 
 
 #busNum=0 for first bus, 1 for second, 2 for third,..., 4 for fifth
-def getBusTime(busNum):
+def getBusTime():
 	NextBUSUrl = "http://webservices.nextbus.com/service/publicXMLFeed?command=predictions&a=sf-muni&r=N&s=3212&useShortTitles=true"
 	#NextBUSUrl = "http://webservices.nextbus.com/service/publicXMLFEED?command=routeConfig&a=sf-muni&r=N"
 
@@ -31,27 +31,18 @@ def getBusTime(busNum):
 		busTimesSeconds.append({
 			'sec': node.getAttribute('seconds')
 		})		
+	#print busTimesMinutes
 
-	nextTime = ""
-	beginTime = 0
-	endTime = 0
-	timeStrLen = 0
-	fullTime = ""
-
-	for i in range(1): #(len(busTimesMinutes)):
-		nextTime = str(busTimesMinutes[i+busNum])
+	for i in range(len(busTimesMinutes)):
+		nextTime = str(busTimesMinutes[i-1])
 		beginTime = nextTime.find("u'")+2
 		endTime = nextTime.find("}")-1
-		fullTime = ""
-		timeStrLen = endTime-beginTime
-		for j in range(endTime-beginTime):
-			fullTime = fullTime+nextTime[beginTime+j]
-
-		#print fullTime
-		#print str(nextTime)[5]
-		#print str(busTimesMinutes[i+busNum]) + str(busTimesSeconds[i+busNum])
-	
-	return fullTime
+		busTimesMinutes[i-1] = int(nextTime[beginTime:endTime])
+		
+	busTimesMinutes.sort()
+	print busTimesMinutes
+#	busTimesSeconds.sort()
+	return busTimesMinutes
 
 def busLights(time1, pin1R, pin1G, pin1B, time2, pin2R, pin2G, pin2B):
 	
@@ -85,8 +76,7 @@ def busLights(time1, pin1R, pin1G, pin1B, time2, pin2R, pin2G, pin2B):
 
 
 ##Example code to run check 3 times.
-for k in range(3):
-	firstTime = getBusTime(0)
-	secondTime = getBusTime(1)
-	busLights(firstTime, 11, 13, 15, secondTime, 16, 22, 18)
+for k in range(1):
+	busTimes = getBusTime()
+	busLights(busTimes[0], 11, 13, 15, busTimes[1], 16, 22, 18)
 	GPIO.cleanup()
